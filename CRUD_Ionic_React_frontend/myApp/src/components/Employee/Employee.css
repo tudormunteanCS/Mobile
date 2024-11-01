@@ -1,0 +1,7 @@
+.employee_member{
+    padding: 20px;
+    cursor: pointer;
+}
+.employee_member:hover{
+    background-color: #778899;
+}
