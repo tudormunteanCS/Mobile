@@ -131,10 +131,10 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({ children }) 
         if (canceled) {
           return;
         }
-        const { type, payload: employee } = message;
-        log(`ws message, employee ${type}`);
+        const { type, payload: item } = message;
+        log(`ws message, item ${type}`);
         if (type === 'created' || type === 'updated') {
-          dispatch({ type: SAVE_EMPLOYEE_SUCCEEDED, payload: { employee } });
+          dispatch({ type: SAVE_EMPLOYEE_SUCCEEDED, payload: { item } });
         }
       });
     }

@@ -41,7 +41,7 @@ const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
                     <div>{fetchingError.message || 'Failed to fetch items'}</div>
                 )}
                 <IonFab vertical="bottom" horizontal="end" slot="fixed">
-                    <IonFabButton onClick={() => history.push('/item')}>
+                    <IonFabButton onClick={() => history.push('/employee')}>
                         <IonIcon icon={add}/>
                     </IonFabButton>
                 </IonFab>

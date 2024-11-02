@@ -18,7 +18,7 @@ export const updateEmployee: (token: string, employee: EmployeeProps) => Promise
 
 interface MessageData {
   type: string;
-  payload: EmployeeProps;
+  payload: EmployeeProps
 }
 
 const log = getLogger('ws');

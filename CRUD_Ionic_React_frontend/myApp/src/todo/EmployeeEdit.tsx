@@ -14,7 +14,6 @@ import { getLogger } from '../core';
 import { EmployeeContext } from '../components/EmployeeProvider/employeeProvider';
 import { RouteComponentProps } from 'react-router';
 import { EmployeeProps } from '../utils/EmployeeProps';
-
 const log = getLogger('EmployeeEdit');
 
 interface EmployeeEditProps extends RouteComponentProps<{
@@ -23,7 +22,7 @@ interface EmployeeEditProps extends RouteComponentProps<{
 
 const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
   const { employees, saving, savingError, saveEmployee } = useContext(EmployeeContext);
-  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
   const [employee, setEmployee] = useState<EmployeeProps>();
   useEffect(() => {
     log('useEffect');
@@ -31,13 +30,11 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
     const employee = employees?.find(it => it._id === routeId);
     setEmployee(employee);
     if (employee) {
-        setEmail(employee.email);
+        setRole(employee.role);
     }
   }, [match.params.id, employees]);
   const handleSave = () => {
-    log('SAVE IS NOT IMPLEMENTED COME TO EmployeeEdit')
-    // const editedEmployee = employee ? { ...employee, email } : { email };
-    // saveEmployee && saveEmployee(editedEmployee).then(() => history.goBack());
+    log('Must update/save and go back in history')
   };
   log('render');
   return (
@@ -53,14 +50,11 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <div>
-            not implemented!!
-        </div>
-        {/* <IonInput value={text} onIonChange={e => setText(e.detail.value || '')} />
+        <IonInput label = {'Role: '} value={role} onIonChange={e => setRole(e.detail.value || '')} />
         <IonLoading isOpen={saving} />
         {savingError && (
           <div>{savingError.message || 'Failed to save employee'}</div>
-        )} */}
+        )}
       </IonContent>
     </IonPage>
   );

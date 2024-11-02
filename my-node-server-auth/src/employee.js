@@ -20,7 +20,7 @@ export class EmployeeStore {
   }
 
   async insert(employee) {
-    if (!employee.firstName) { // validation
+    if (!employee.role) { // validation
       throw new Error('Missing text property')
     }
     return this.store.insert(employee);

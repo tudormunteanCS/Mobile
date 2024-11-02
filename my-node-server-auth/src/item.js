@@ -61,6 +61,7 @@ itemRouter.get('/:id', async (ctx) => {
 const createItem = async (ctx, item, response) => {
   try {
     const userId = ctx.state.user._id;
+    console.log(item)
     item.userId = userId;
     response.body = await itemStore.insert(item);
     response.status = 201; // created
