@@ -11,6 +11,10 @@ export class EmployeeStore {
     return this.store.find(props);
   }
 
+  // async size(props){
+  //   return this.store.size;
+  // }
+
   async findOne(props) {
     return this.store.findOne(props);
   }
@@ -31,13 +35,16 @@ export class EmployeeStore {
   }
 }
 
-const employeeStore = new EmployeeStore({filename: '/db/employees.json',autoload:true})
+const employeeStore = new EmployeeStore({filename: './db/employees.json',autoload:true})
 
 export const employeeRouter = new Router()
 
 employeeRouter.get('/', async(ctx)=>{
-    const userId = ctx.state.user._id
-    ctx.response.body = await (employeeStore.find({userId}))
+  const userId = ctx.state.user._id
+  console.log("userID: " + userId)
+  ctx.response.body = await (employeeStore.find({userId}))
+  console.log(ctx.response.body)
+  ctx.response.status = 200; // ok
 })
 
 employeeRouter.get('/:id', async (ctx) => {

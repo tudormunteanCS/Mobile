@@ -1,7 +1,52 @@
-.employee_member{
-    padding: 20px;
+.employee_member {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin: 12px 0;
+    transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
+    max-width: 300px;
 }
-.employee_member:hover{
-    background-color: #778899;
+
+.employee_member:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.employee_member > ion-label {
+    font-size: 16px;
+    color: #333333;
+    margin-bottom: 8px;
+}
+
+.employee_member > ion-label:first-child {
+    font-weight: 600;
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 12px;
+}
+
+.employee_member > ion-label:last-child {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-top: 8px;
+}
+
+/* Styling for roles and other fields */
+.employee_member .role {
+    font-weight: 500;
+    color: #2980b9;
+}
+
+.employee_member .email {
+    font-style: italic;
+    color: #8e44ad;
+}
+
+.employee_member .hiring-date {
+    color: #27ae60;
 }

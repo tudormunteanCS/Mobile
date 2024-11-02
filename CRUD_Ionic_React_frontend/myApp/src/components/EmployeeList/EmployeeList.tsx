@@ -22,19 +22,19 @@ const log = getLogger('ItemList');
 const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
     const { employees, fetching, fetchingError } = useContext(EmployeeContext);
     log('render', fetching);
-      
     return(
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>My App</IonTitle>
+                    <IonTitle>Employees</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent>
                 <IonLoading isOpen={fetching} message={"Fetching employees"}/>
                 {employees && (
                         <div className="employees_list">
-                            {employees.map(({_id,firstName,lastName,email,role,hiringDate}) => <Employee key={_id} _id={_id} firstName={firstName} lastName={lastName} email={email} role={role} hiringDate={hiringDate} onEdit={id => history.push(`/employee/${id}`)}/>)}
+                            {employees.map(({_id,firstName,lastName,email,role,hiringDate}) =>
+                                 <Employee key={_id} _id={_id} firstName={firstName} lastName={lastName} email={email} role={role} hiringDate={hiringDate} onEdit={id => history.push(`/employee/${id}`)}/>)}
                         </div>
                     )}
                 {fetchingError && (

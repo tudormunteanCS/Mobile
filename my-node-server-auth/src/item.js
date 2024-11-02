@@ -36,6 +36,7 @@ const itemStore = new ItemStore({ filename: './db/items.json', autoload: true })
 export const itemRouter = new Router();
 
 itemRouter.get('/', async (ctx) => {
+  
   const userId = ctx.state.user._id;
   ctx.response.body = await itemStore.find({ userId });
   ctx.response.status = 200; // ok
