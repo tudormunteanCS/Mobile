@@ -41,9 +41,9 @@ export const employeeRouter = new Router()
 
 employeeRouter.get('/', async(ctx)=>{
   const userId = ctx.state.user._id
-  console.log("userID: " + userId)
+  // console.log("userID: " + userId)
   ctx.response.body = await (employeeStore.find({userId}))
-  console.log(ctx.response.body)
+  // console.log(ctx.response.body)
   ctx.response.status = 200; // ok
 })
 
@@ -66,11 +66,14 @@ employeeRouter.get('/:id', async (ctx) => {
 const createEmployee = async (ctx, employee, response) => {
     try {
       const userId = ctx.state.user._id;
+      console.log(ctx.state)
+      console.log(employee)
       employee.userId = userId;
       response.body = await employeeStore.insert(employee);
       response.status = 201; // created
       broadcast(userId, { type: 'created', payload: employee });
     } catch (err) {
+      console.log(err)
       response.body = { message: err.message };
       response.status = 400; // bad request
     }

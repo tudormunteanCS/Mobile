@@ -67,6 +67,8 @@ const createItem = async (ctx, item, response) => {
     response.status = 201; // created
     broadcast(userId, { type: 'created', payload: item });
   } catch (err) {
+    console.log(err)
+    console.log(item)
     response.body = { message: err.message };
     response.status = 400; // bad request
   }

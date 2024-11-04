@@ -30,7 +30,7 @@ const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
                 </IonToolbar>
             </IonHeader>
             <IonContent>
-                <IonLoading isOpen={fetching} message={"Fetching employees"}/>
+                {/* <IonLoading isOpen={fetching} message={"Fetching employees"}/> */}
                 {employees && (
                         <div className="employees_list">
                             {employees.map(({_id,firstName,lastName,email,role,hiringDate}) =>

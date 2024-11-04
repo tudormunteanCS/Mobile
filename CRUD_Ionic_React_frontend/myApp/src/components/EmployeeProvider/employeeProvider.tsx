@@ -47,15 +47,25 @@ const reducer: (state: EmployeesState, action: ActionProps) => EmployeesState =
       case SAVE_EMPLOYEE_STARTED:
         return { ...state, savingError: null, saving: true };
       case SAVE_EMPLOYEE_SUCCEEDED:
-        const employees = [...(state.employees || [])];
-        const employee = payload.employee;
-        const index = employees.findIndex(it => it._id === employee._id);
-        if (index === -1) {
-          employees.splice(0, 0, employee);
-        } else {
-          employees[index] = employee;
+        if(payload.employee){
+          console.log("payload in reducer below")
+          console.log(payload)
+          const employees = [...(state.employees || [])];
+          const employee = payload.employee;
+          console.log("Employee from payload below")
+          console.log(employee)
+          if(employee._id){
+            const index = employees.findIndex(it => it._id === employee._id);
+            if (index === -1) {
+              employees.splice(0, 0, employee);
+            } else {
+              employees[index] = employee;
+            }
+            return { ...state, employees, saving: false };
+          }
         }
-        return { ...state, employees, saving: false };
+       
+        
       case SAVE_EMPLOYEE_FAILED:
         return { ...state, savingError: payload.error, saving: false };
       default:
@@ -110,12 +120,18 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({ children }) 
   }
 
   async function saveEmployeeCallback(employee: EmployeeProps) {
+    log("saveEmployeeCallback: " + employee)
+    log(employee)
     try {
       log('saveEmployee started');
       dispatch({ type: SAVE_EMPLOYEE_STARTED });
       const savedEmployee = await (employee._id ? updateEmployee(token, employee) : createEmployee(token, employee));
       log('saveEmployee succeeded');
+      log("savedEmployee before dispatch below")
+      console.log(savedEmployee)
       dispatch({ type: SAVE_EMPLOYEE_SUCCEEDED, payload: { employee: savedEmployee } });
+      // log(savedEmployee)
+
     } catch (error) {
       log('saveEmployee failed');
       dispatch({ type: SAVE_EMPLOYEE_FAILED, payload: { error } });
@@ -131,10 +147,10 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({ children }) 
         if (canceled) {
           return;
         }
-        const { type, payload: item } = message;
-        log(`ws message, item ${type}`);
+        const { type, payload: employee } = message;
+        log(`ws message, employee ${type}`);
         if (type === 'created' || type === 'updated') {
-          dispatch({ type: SAVE_EMPLOYEE_SUCCEEDED, payload: { item } });
+          dispatch({ type: SAVE_EMPLOYEE_SUCCEEDED, payload: { employee } });
         }
       });
     }
