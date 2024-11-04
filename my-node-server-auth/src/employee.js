@@ -8,12 +8,9 @@ export class EmployeeStore {
   }
 
   async find(props) {
-    return this.store.find(props);
+    return this.store.find(props)
   }
 
-  // async size(props){
-  //   return this.store.size;
-  // }
 
   async findOne(props) {
     return this.store.findOne(props);
@@ -41,9 +38,7 @@ export const employeeRouter = new Router()
 
 employeeRouter.get('/', async(ctx)=>{
   const userId = ctx.state.user._id
-  // console.log("userID: " + userId)
   ctx.response.body = await (employeeStore.find({userId}))
-  // console.log(ctx.response.body)
   ctx.response.status = 200; // ok
 })
 
