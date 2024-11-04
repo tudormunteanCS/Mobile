@@ -12,6 +12,7 @@ export interface AuthState {
   isAuthenticated: boolean;
   isAuthenticating: boolean;
   login?: LoginFn;
+  logout?: ()=>void;
   pendingAuthentication?: boolean;
   username?: string;
   password?: string;
@@ -23,7 +24,7 @@ const initialState: AuthState = {
   isAuthenticating: false,
   authenticationError: null,
   pendingAuthentication: false,
-  token: '',
+  token: ''
 };
 
 export const AuthContext = React.createContext<AuthState>(initialState);
@@ -36,31 +37,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, setState] = useState<AuthState>(initialState);
   const { isAuthenticated, isAuthenticating, authenticationError, pendingAuthentication, token } = state;
   const login = useCallback<LoginFn>(loginCallback, []);
+  const logout = useCallback(logoutCallback, []);
+  const {saveAuthToken, getAuthToken, removeAuthToken} = usePreferences()
+
   useEffect(authenticationEffect, [pendingAuthentication]);
   useEffect(() => {
     log("checkAuthenticationEffect")
     const checkAuthenticationEffect = async () => {
-      log(state)
-      const { username, password } = state;
-      log(username + " " + password)
-      if(username && password){
-        const storedToken = await getAuthToken(username,password); // Get the token from Preferences
-        log("stored token: " + storedToken)
-        if (storedToken) {
-          // If a token is found, set the authentication state
-          setState((prevState) => ({
-            ...prevState,
-            isAuthenticated: true,
-            token: storedToken,
-          }));
-        }
+
+      const storedToken = await getAuthToken(); // Get the token from Preferences
+      if (storedToken) {
+        // If a token is found, set the authentication state
+        setState((prevState) => ({
+          ...prevState,
+          isAuthenticated: true,
+          token: storedToken,
+        }));
       }
+      
     };
     
     checkAuthenticationEffect(); // Call the async function
   }, []); // Add effect to check authentication
-  const value = { isAuthenticated, login, isAuthenticating, authenticationError, token };
-  const {saveAuthToken, getAuthToken} = usePreferences()
+  const value = { isAuthenticated, login,logout, isAuthenticating, authenticationError, token };
+ 
   log('render');
   return (
     <AuthContext.Provider value={value}>
@@ -102,9 +102,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { username, password } = state;
         console.log(username + " x " + password)
         const { token } = await loginApi(username, password);
-        log(token)
+        // log(token)
         if(username && password){
-          saveAuthToken(username,password,token)
+          saveAuthToken(token)
         }
         if (canceled) {
           return;
@@ -134,4 +134,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     }
   }
+
+  async function logoutCallback() {
+    log('logout');
+    await removeAuthToken(); // Clear the token from preferences
+    setState(initialState);  // Reset the authentication state
+  }
+
+
 };

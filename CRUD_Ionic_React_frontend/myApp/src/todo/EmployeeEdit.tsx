@@ -14,6 +14,9 @@ import { getLogger } from '../core';
 import { EmployeeContext } from '../components/EmployeeProvider/employeeProvider';
 import { RouteComponentProps } from 'react-router';
 import { EmployeeProps } from '../utils/EmployeeProps';
+import { useNetwork } from '../utils/useNetwork';
+import { usePreferences } from '../utils/usePreferences';
+
 const log = getLogger('EmployeeEdit');
 
 interface EmployeeEditProps extends RouteComponentProps<{
@@ -27,6 +30,10 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
   const[lastName,setLastName] = useState('')
   const[email,setEmail] = useState('')
   const [employee, setEmployee] = useState<EmployeeProps>();
+  const { networkStatus } = useNetwork();
+  const {saveOfflineAction} = usePreferences()
+
+
   useEffect(() => {
     log('useEffect');
     const routeId = match.params.id || '';
@@ -39,24 +46,33 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
       setEmail(employee.email || '');
     }
   }, [match.params.id, employees]);
-  const handleSave = () => {
-    log('Must save and go back in history')
-    //build a new employee with firstName,lastName, email, role, hiringDate in this order 
-    // Build the employee object with updated values
-    const hiringDate = new Date().toISOString().slice(0, 10);
-    const updatedEmployee = {
-      ...employee,   // Spread existing employee properties (for `_id` and any other fields)
-      firstName,
-      lastName,
-      email,
-      role,
-      hiringDate,
-    };
 
-    // Call saveEmployee and navigate back after save
-    saveEmployee && saveEmployee(updatedEmployee).then(() => {
-      history.goBack();
-    }).catch(err => log('Save failed', err));
+  
+
+
+  const handleSave = async () => {
+    const hiringDate = new Date().toISOString().slice(0, 10);
+      const updatedEmployee = {
+        ...employee,   // Spread existing employee properties (for `_id` and any other fields)
+        firstName,
+        lastName,
+        email,
+        role,
+        hiringDate,
+      };
+    if(!networkStatus.connected){
+        log('must save in pref')
+        await saveOfflineAction(updatedEmployee);
+        history.goBack()
+    }
+    else{
+      log('Must save and go back in history')
+      
+      // Call saveEmployee and navigate back after save
+      saveEmployee && saveEmployee(updatedEmployee).then(() => {
+        history.goBack();
+      }).catch(err => log('Save failed', err));
+    }
   };
   log('render');
   return (

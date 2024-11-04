@@ -1,5 +1,5 @@
 import { RouteComponentProps } from 'react-router';
-import React, { useContext}from "react";
+import React, { useContext, useEffect }from "react";
 import Employee from "../Employee/Employee";
 import { add } from 'ionicons/icons';
 import { getLogger } from '../../core';
@@ -16,11 +16,62 @@ import {
 } from '@ionic/react';
 import "./EmployeeList.css"
 import { EmployeeContext } from '../EmployeeProvider/employeeProvider';
+import { usePreferences } from '../../utils/usePreferences';
+import { AuthContext } from '../../auth/AuthProvider';
+import { useNetwork } from '../../utils/useNetwork';
+import { EmployeeProps } from '../../utils/EmployeeProps';
+
 
 const log = getLogger('ItemList');
 
 const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
-    const { employees, fetching, fetchingError } = useContext(EmployeeContext);
+    const { employees, fetching, fetchingError, saveEmployee} = useContext(EmployeeContext);
+    const { logout } = useContext(AuthContext)
+    const { networkStatus } = useNetwork();
+    const { getOfflineActions , clearOfflineActions } = usePreferences();
+    
+    useEffect(() => {
+        if (networkStatus.connected) {
+          log('Network is online, processing offline actions');
+    
+          const processOfflineActions = async () => {
+            const storedActions = await getOfflineActions();
+            log(storedActions)
+            if (storedActions) {
+               
+    
+              for (const action of storedActions) {
+                try {
+                  // Assuming action is the updatedEmployee format
+                  if(saveEmployee)
+                    saveEmployee(action)
+                  log(`Successfully saved employee: ${action.firstName} ${action.lastName}`);
+                } catch (error) {
+                  log(`Failed to save employee: ${error}`);
+                }
+              }
+    
+              // Clear offline actions after processing
+              await clearOfflineActions()
+              log('Cleared offline actions after processing');
+            }
+          };
+    
+          processOfflineActions();
+        }
+      }, [networkStatus.connected]); // Run this effect when the network status changes
+
+
+    const handleLogout = async () => {
+        // Remove the user token from preferences
+        log('logging out')
+        if(logout)
+            await logout()
+        
+        // Redirect to the login page
+        history.push('/login');
+
+    };
     log('render', fetching);
     return(
         <IonPage>
@@ -43,6 +94,9 @@ const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
                 <IonFab vertical="bottom" horizontal="end" slot="fixed">
                     <IonFabButton onClick={() => history.push('/employee')}>
                         <IonIcon icon={add}/>
+                    </IonFabButton>
+                    <IonFabButton color='danger' onClick={handleLogout}>
+                        Log out
                     </IonFabButton>
                 </IonFab>
             </IonContent>
