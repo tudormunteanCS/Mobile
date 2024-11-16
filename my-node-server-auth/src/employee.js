@@ -62,7 +62,7 @@ const createEmployee = async (ctx, employee, response) => {
     try {
       const userId = ctx.state.user._id;
       console.log(ctx.state)
-      console.log(employee)
+      // console.log(employee)
       employee.userId = userId;
       response.body = await employeeStore.insert(employee);
       response.status = 201; // created

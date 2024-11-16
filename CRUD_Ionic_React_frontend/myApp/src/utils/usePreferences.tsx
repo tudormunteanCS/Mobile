@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { Preferences } from '@capacitor/preferences';
 
 // export const usePreferences = () => {
@@ -90,6 +90,17 @@ export const usePreferences = ()=>{
       console.log("Offline actions cleared successfully");
     };
 
+    const get = useCallback<(key: string) => Promise<string | null>>(
+      key => Preferences.get({ key }).then(result => result.value),
+      []
+    );
+  
+    const set = useCallback<(key: string, value: string) => Promise<void>>(
+      (key, value) => Preferences.set({ key, value }),
+      []
+    );
+  
+
     return {
       saveAuthToken,
       getAuthToken,
@@ -97,5 +108,7 @@ export const usePreferences = ()=>{
       saveOfflineAction,
       getOfflineActions,
       clearOfflineActions,
+      get,
+      set
     };
   }

@@ -26,7 +26,7 @@ import { useNetwork } from '../../utils/useNetwork';
 import { EmployeeProps } from '../../utils/EmployeeProps';
 
 
-const log = getLogger('ItemList');
+const log = getLogger('EmployeeList');
 
 
 
@@ -119,7 +119,9 @@ const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
         history.push('/login');
 
     };
-    log('render', fetching);
+    // log('saving?', fetching);
+    if(employees)
+        log(employees)
     return(
         <IonPage>
             <IonHeader>
@@ -135,13 +137,22 @@ const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
                         </IonSelectOption>
                     ))}
                 </IonSelect>
-                {/* <IonLoading isOpen={fetching} message={"Fetching employees"}/> */}
-                {displayedEmployees.length > 0 && (
-                        <div className="employees_list">
-                            {displayedEmployees.map(({_id,firstName,lastName,email,role,hiringDate}) =>
-                                 <Employee key={_id} _id={_id} firstName={firstName} lastName={lastName} email={email} role={role} hiringDate={hiringDate} onEdit={id => history.push(`/employee/${id}`)}/>)}
-                        </div>
-                    )}
+                {employees && (
+                <div className="employees_list">
+                    {employees.map(({ _id, firstName, lastName, email, role, hiringDate }) => (
+                    <Employee
+                        key={_id}
+                        _id={_id}
+                        firstName={firstName}
+                        lastName={lastName}
+                        email={email}
+                        role={role}
+                        hiringDate={hiringDate}
+                        onEdit={id => history.push(`/employee/${id}`)}
+                    />
+                    ))}
+                </div>
+                )}
                 {fetchingError && (
                     <div>{fetchingError.message || 'Failed to fetch items'}</div>
                 )}

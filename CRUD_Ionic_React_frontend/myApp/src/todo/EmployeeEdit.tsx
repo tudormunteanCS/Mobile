@@ -1,21 +1,31 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   IonButton,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonActionSheet,
   IonButtons,
   IonContent,
   IonHeader,
   IonInput,
+  IonGrid,
   IonLoading,
+  IonRow,
+  IonCol,
+  IonImg,
   IonPage,
   IonTitle,
   IonToolbar
 } from '@ionic/react';
+import { camera, close, trash } from 'ionicons/icons';
 import { getLogger } from '../core';
 import { EmployeeContext } from '../components/EmployeeProvider/employeeProvider';
 import { RouteComponentProps } from 'react-router';
 import { EmployeeProps } from '../utils/EmployeeProps';
 import { useNetwork } from '../utils/useNetwork';
 import { usePreferences } from '../utils/usePreferences';
+import { MyPhoto, usePhotos } from '../utils/usePhotos';
 
 const log = getLogger('EmployeeEdit');
 
@@ -75,6 +85,11 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
     }
   };
   log('render');
+
+
+  const { photos, takePhoto, deletePhoto } = usePhotos();
+  const [photoToDelete, setPhotoToDelete] = useState<MyPhoto>();
+
   return (
     <IonPage>
       <IonHeader>
@@ -96,6 +111,42 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
         {savingError && (
           <div>{savingError.message || 'Failed to save employee'}</div>
         )}
+      </IonContent>
+      <IonContent>
+      <IonGrid>
+          <IonRow>
+            {photos.map((photo, index) => (
+              <IonCol size="6" key={index}>
+                <IonImg onClick={() => setPhotoToDelete(photo)}
+                        src={photo.webviewPath}/>
+              </IonCol>
+            ))}
+          </IonRow>
+        </IonGrid>
+        <IonFab vertical="bottom" horizontal="center" slot="fixed">
+          <IonFabButton onClick={() => takePhoto()}>
+            <IonIcon icon={camera}/>
+          </IonFabButton>
+          <IonActionSheet
+          isOpen={!!photoToDelete}
+          buttons={[{
+            text: 'Delete',
+            role: 'destructive',
+            icon: trash,
+            handler: () => {
+              if (photoToDelete) {
+                deletePhoto(photoToDelete);
+                setPhotoToDelete(undefined);
+              }
+            }
+          }, {
+            text: 'Cancel',
+            icon: close,
+            role: 'cancel'
+          }]}
+          onDidDismiss={() => setPhotoToDelete(undefined)}
+        />
+        </IonFab>
       </IonContent>
     </IonPage>
   );

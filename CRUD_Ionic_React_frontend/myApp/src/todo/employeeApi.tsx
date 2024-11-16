@@ -36,7 +36,9 @@ export const newWebSocket = (token: string, onMessage: (data: MessageData) => vo
     log('web socket onerror', error);
   };
   ws.onmessage = messageEvent => {
-    log('web socket onmessage');
+    console.log('received message below:')
+    console.log(JSON.parse(messageEvent.data))
+    
     onMessage(JSON.parse(messageEvent.data));
   };
   return () => {

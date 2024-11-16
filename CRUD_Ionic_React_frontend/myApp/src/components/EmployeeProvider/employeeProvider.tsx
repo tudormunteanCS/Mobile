@@ -48,12 +48,9 @@ const reducer: (state: EmployeesState, action: ActionProps) => EmployeesState =
         return { ...state, savingError: null, saving: true };
       case SAVE_EMPLOYEE_SUCCEEDED:
         if(payload.employee){
-          console.log("payload in reducer below")
-          console.log(payload)
           const employees = [...(state.employees || [])];
-          const employee = payload.employee;
-          console.log("Employee from payload below")
-          console.log(employee)
+          const employee = payload.employee;        
+          log('SAVE_EMPLOYEE_SUCCEEDED')
           if(employee._id){
             const index = employees.findIndex(it => it._id === employee._id);
             if (index === -1) {
@@ -123,14 +120,10 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({ children }) 
     log("saveEmployeeCallback: " + employee)
     log(employee)
     try {
-      log('saveEmployee started');
       dispatch({ type: SAVE_EMPLOYEE_STARTED });
       const savedEmployee = await (employee._id ? updateEmployee(token, employee) : createEmployee(token, employee));
-      log('saveEmployee succeeded');
-      log("savedEmployee before dispatch below")
-      console.log(savedEmployee)
       dispatch({ type: SAVE_EMPLOYEE_SUCCEEDED, payload: { employee: savedEmployee } });
-      // log(savedEmployee)
+      log('SAVE_EMPLOYEE_SUCCEEDED callback')
 
     } catch (error) {
       log('saveEmployee failed');
