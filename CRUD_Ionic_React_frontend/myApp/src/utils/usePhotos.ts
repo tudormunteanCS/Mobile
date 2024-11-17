@@ -22,9 +22,9 @@ export interface MyPhoto {
       deletePhoto,
     };
   
-    async function takePhoto() {
+    async function takePhoto(userId : string | undefined) {
       const data = await getPhoto();
-      const filepath = new Date().getTime() + '.jpeg';
+      const filepath = `${userId}` + '_' + new Date().getTime() + '.jpeg';
       await writeFile(filepath, data.base64String!);
       const webviewPath = `data:image/jpeg;base64,${data.base64String}`
       const newPhoto = { filepath, webviewPath };

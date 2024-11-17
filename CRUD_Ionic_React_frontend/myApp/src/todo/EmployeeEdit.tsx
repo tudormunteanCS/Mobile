@@ -90,6 +90,8 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
   const { photos, takePhoto, deletePhoto } = usePhotos();
   const [photoToDelete, setPhotoToDelete] = useState<MyPhoto>();
 
+  const currentId = match.params.id;
+
   return (
     <IonPage>
       <IonHeader>
@@ -114,17 +116,24 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
       </IonContent>
       <IonContent>
       <IonGrid>
-          <IonRow>
-            {photos.map((photo, index) => (
-              <IonCol size="6" key={index}>
-                <IonImg onClick={() => setPhotoToDelete(photo)}
-                        src={photo.webviewPath}/>
-              </IonCol>
-            ))}
+          <IonRow>       
+  `    {photos
+        .filter(photo => {
+          const userIdFromPath = photo.filepath.split('_')[0]; // Split and get the first part
+          return userIdFromPath === currentId; // Compare with currentId
+        })
+        .map((photo, index) => (
+          <IonCol size="6" key={index}>
+            <IonImg 
+              onClick={() => setPhotoToDelete(photo)}
+              src={photo.webviewPath}
+            />
+          </IonCol>
+        ))}`
           </IonRow>
         </IonGrid>
         <IonFab vertical="bottom" horizontal="center" slot="fixed">
-          <IonFabButton onClick={() => takePhoto()}>
+          <IonFabButton onClick={() => takePhoto(currentId)}>
             <IonIcon icon={camera}/>
           </IonFabButton>
           <IonActionSheet
