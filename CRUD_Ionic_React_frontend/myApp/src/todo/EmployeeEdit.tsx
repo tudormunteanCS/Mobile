@@ -26,6 +26,8 @@ import { EmployeeProps } from '../utils/EmployeeProps';
 import { useNetwork } from '../utils/useNetwork';
 import { usePreferences } from '../utils/usePreferences';
 import { MyPhoto, usePhotos } from '../utils/usePhotos';
+import { useMyLocation } from '../utils/useMyLocation';
+import MyMap from '../components/MyMap/MyMap';
 
 const log = getLogger('EmployeeEdit');
 
@@ -92,6 +94,9 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
 
   const currentId = match.params.id;
 
+  const myLocation = useMyLocation();
+  const { latitude: lat, longitude: lng } = myLocation.position?.coords || {}
+
   return (
     <IonPage>
       <IonHeader>
@@ -116,20 +121,27 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
       </IonContent>
       <IonContent>
       <IonGrid>
+        {lat && lng &&
+          <MyMap
+            lat={lat}
+            lng={lng}
+            onMapClick={() => log('must implement adding a new marker and deleting all before markers ALSO Save to server and sent back to each user LAT and LONG to load map') }
+            onMarkerClick={() => log('onMarker')}
+          />}
           <IonRow>       
-  `    {photos
-        .filter(photo => {
-          const userIdFromPath = photo.filepath.split('_')[0]; // Split and get the first part
-          return userIdFromPath === currentId; // Compare with currentId
-        })
-        .map((photo, index) => (
-          <IonCol size="6" key={index}>
-            <IonImg 
-              onClick={() => setPhotoToDelete(photo)}
-              src={photo.webviewPath}
-            />
-          </IonCol>
-        ))}`
+          {photos
+            .filter(photo => {
+              const userIdFromPath = photo.filepath.split('_')[0]; // Split and get the first part
+              return userIdFromPath === currentId; // Compare with currentId
+            })
+            .map((photo, index) => (
+              <IonCol size="6" key={index}>
+                <IonImg 
+                  onClick={() => setPhotoToDelete(photo)}
+                  src={photo.webviewPath}
+                />
+              </IonCol>
+            ))}
           </IonRow>
         </IonGrid>
         <IonFab vertical="bottom" horizontal="center" slot="fixed">
