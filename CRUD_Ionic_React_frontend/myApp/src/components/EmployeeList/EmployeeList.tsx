@@ -25,7 +25,7 @@ import { usePreferences } from '../../utils/usePreferences';
 import { AuthContext } from '../../auth/AuthProvider';
 import { useNetwork } from '../../utils/useNetwork';
 import { EmployeeProps } from '../../utils/EmployeeProps';
-
+import { createAnimation, CreateAnimation } from '@ionic/react';
 
 const log = getLogger('EmployeeList');
 
@@ -127,12 +127,33 @@ const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
         setIsModalOpen(true); // Open the modal
     };
 
-    const handleCloseModal = (e: Event) => {
+    const handleCloseModal = () => {
         // Check if the click is outside the modal content
         setIsModalOpen(false);
     };
     if(employees)
         log(employees)
+
+
+    useEffect(simpleAnimationJS, []);
+    function simpleAnimationJS() {
+        const el = document.querySelector('.square-a');
+        if (el) {
+          const animation = createAnimation()
+            .addElement(el)
+            .duration(5000)
+            .direction('alternate')
+            .iterations(Infinity)
+            .keyframes([
+              { offset: 0, transform: 'scale(3)', opacity: '1' },
+              { offset: 0.5, transform: 'scale(1.5)', opacity: '1' },
+              {
+                offset: 1, transform: 'scale(0.5)', opacity: '0.2'
+              }
+            ]);
+          animation.play();
+        }
+      }
     return(
         <IonPage>
             <IonHeader>
@@ -171,6 +192,9 @@ const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
                         <h2>Information</h2>
                         <p>This is a simple modal with expanding animation.</p>
                     </div>
+                </div>
+                <div className="square-a">
+                    <p>Simple Animation - createAnimation</p>
                 </div>
                 <IonFab vertical="bottom" horizontal="center" slot="fixed">
                     <IonButton onClick={handleAnimationClicked}>Animation</IonButton>
