@@ -18,7 +18,7 @@ import {
   IonTitle,
   IonToolbar
 } from '@ionic/react';
-import { camera, close, trash } from 'ionicons/icons';
+import { camera, close, logoXing, trash } from 'ionicons/icons';
 import { getLogger } from '../core';
 import { EmployeeContext } from '../components/EmployeeProvider/employeeProvider';
 import { RouteComponentProps } from 'react-router';
@@ -37,6 +37,7 @@ interface EmployeeEditProps extends RouteComponentProps<{
 
 const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
   const { employees, saving, savingError, saveEmployee } = useContext(EmployeeContext);
+  
   const [role, setRole] = useState('');
   const[firstName,setFirstName] = useState('')
   const[lastName,setLastName] = useState('')
@@ -45,6 +46,8 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
   const { networkStatus } = useNetwork();
   const {saveOfflineAction} = usePreferences()
 
+  const [lat, setLat] = useState<number | undefined>();
+  const [lng, setLng] = useState<number | undefined>();
 
   useEffect(() => {
     log('useEffect');
@@ -52,7 +55,10 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
     const employee = employees?.find(it => it._id === routeId);
     setEmployee(employee);
     if (employee) {
+      // log('setting' + 'lat: ' + employee.lat + '  long: ' + lng)
       setRole(employee.role);
+      setLat(employee.lat)
+      setLng(employee.lng)
       setFirstName(employee.firstName || '');
       setLastName(employee.lastName || '');
       setEmail(employee.email || '');
@@ -62,7 +68,13 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
   
 
 
+
+  const myLocation = useMyLocation();
+  console.log(employee)
+  // const { latitude: lat, longitude: lng } = myLocation.position?.coords || {latitude: employee?.lat, longitude: employee?.lng}
+
   const handleSave = async () => {
+    // log('before saving ' + 'lat: ' + lat + '  long: ' + lng)
     const hiringDate = new Date().toISOString().slice(0, 10);
       const updatedEmployee = {
         ...employee,   // Spread existing employee properties (for `_id` and any other fields)
@@ -71,14 +83,17 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
         email,
         role,
         hiringDate,
+        lat,
+        lng
       };
+      log(employee)
     if(!networkStatus.connected){
-        log('must save in pref')
+        // log('must save in pref')
         await saveOfflineAction(updatedEmployee);
         history.goBack()
     }
     else{
-      log('Must save and go back in history')
+      // log('Must save and go back in history')
       
       // Call saveEmployee and navigate back after save
       saveEmployee && saveEmployee(updatedEmployee).then(() => {
@@ -94,8 +109,15 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
 
   const currentId = match.params.id;
 
-  const myLocation = useMyLocation();
-  const { latitude: lat, longitude: lng } = myLocation.position?.coords || {}
+  
+
+
+  const handleMapClicked = (lat: number,lng:number) =>{
+    log('clicked lat is: ' + lat )
+    log('clicked long is: ' + lng )
+    setLat(lat)
+    setLng(lng)
+  }
 
   return (
     <IonPage>
@@ -125,7 +147,7 @@ const EmployeeEdit: React.FC<EmployeeEditProps> = ({ history, match }) => {
           <MyMap
             lat={lat}
             lng={lng}
-            onMapClick={() => log('must implement adding a new marker and deleting all before markers ALSO Save to server and sent back to each user LAT and LONG to load map') }
+            onMapClick={(lat, lng) => handleMapClicked(lat,lng)}
             onMarkerClick={() => log('onMarker')}
           />}
           <IonRow>       

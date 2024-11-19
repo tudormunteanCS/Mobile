@@ -5,4 +5,6 @@ export interface EmployeeProps{
     email:string;
     role:string;
     hiringDate: string;
+    lat?:number;
+    lng?:number;
 }

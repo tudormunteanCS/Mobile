@@ -16,7 +16,8 @@ import {
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     IonSelect,
-    IonSelectOption
+    IonSelectOption,
+    IonButton
 } from '@ionic/react';
 import "./EmployeeList.css"
 import { EmployeeContext } from '../EmployeeProvider/employeeProvider';
@@ -119,7 +120,17 @@ const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
         history.push('/login');
 
     };
-    // log('saving?', fetching);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleAnimationClicked = () => {
+        setIsModalOpen(true); // Open the modal
+    };
+
+    const handleCloseModal = (e: Event) => {
+        // Check if the click is outside the modal content
+        setIsModalOpen(false);
+    };
     if(employees)
         log(employees)
     return(
@@ -139,7 +150,7 @@ const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
                 </IonSelect>
                 {employees && (
                 <div className="employees_list">
-                    {employees.map(({ _id, firstName, lastName, email, role, hiringDate }) => (
+                    {employees.map(({ _id, firstName, lastName, email, role, hiringDate,lat,lng }) => (
                     <Employee
                         key={_id}
                         _id={_id}
@@ -148,11 +159,22 @@ const EmployeeList: React.FC<RouteComponentProps> = ({ history }) =>{
                         email={email}
                         role={role}
                         hiringDate={hiringDate}
+                        lat={lat}
+                        lng ={lng}
                         onEdit={id => history.push(`/employee/${id}`)}
                     />
                     ))}
                 </div>
                 )}
+                <div className={`modal ${isModalOpen ? 'show' : ''}`} onClick={handleCloseModal}>
+                    <div className="modal-content">
+                        <h2>Information</h2>
+                        <p>This is a simple modal with expanding animation.</p>
+                    </div>
+                </div>
+                <IonFab vertical="bottom" horizontal="center" slot="fixed">
+                    <IonButton onClick={handleAnimationClicked}>Animation</IonButton>
+                </IonFab>
                 {fetchingError && (
                     <div>{fetchingError.message || 'Failed to fetch items'}</div>
                 )}
